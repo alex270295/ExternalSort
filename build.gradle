@@ -1,0 +1,16 @@
+group 'fileSorter'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply from: rootProject.file('gradle/jmh.gradle')
+
+repositories {
+    mavenLocal()
+    maven { url 'http://repo.grails.org/grails/repo' }
+    maven { url 'http://repo.grails.org/grails/plugins' }
+}
+
+dependencies {
+    testCompile 'org.apache.commons:commons-lang3:3.4'
+    testCompile 'junit:junit:4.12'
+}
