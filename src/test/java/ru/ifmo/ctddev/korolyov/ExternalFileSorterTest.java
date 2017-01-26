@@ -17,21 +17,17 @@ public class ExternalFileSorterTest {
     @Test
     public void sortCorrectnessTest() throws Exception {
         String inputFilename = "input.txt";
-        String outputFilenameInMemory = "output.txt_inmemory";
-        String outputFilenameExternal = "output.txt_external";
-        int totalLines = 1;
-        for (int i = 0; i < 20; i++) {
-            totalLines = totalLines * 2;
-            TestUtils.createFile(inputFilename, totalLines, 128, 512);
+        String outputFilename = "output.txt";
+        int totalLines = 1000000;
+        for (int i = 0; i < 10; i++) {
+            TestUtils.createFile(inputFilename, totalLines, 1024, 2048);
             System.out.println(String.format("File with %d lines created", totalLines));
-            TestUtils.inmemorySort(inputFilename, outputFilenameInMemory, Comparator.naturalOrder());
-            ExternalFileSorter.sort(inputFilename, outputFilenameExternal, Comparator.naturalOrder());
-            TestUtils.assertEqualsFiles(outputFilenameInMemory, outputFilenameExternal);
+            ExternalFileSorter.sort(inputFilename, outputFilename, Comparator.naturalOrder());
+            TestUtils.assertFileSorted(outputFilename, Comparator.naturalOrder());
             System.out.println(String.format("Sort for file with %d lines correct", totalLines));
         }
-        new File(inputFilename).deleteOnExit();
-        new File(outputFilenameExternal).deleteOnExit();
-        new File(outputFilenameInMemory).deleteOnExit();
+        //new File(inputFilename).deleteOnExit();
+        new File(outputFilename).deleteOnExit();
     }
 
     @Test

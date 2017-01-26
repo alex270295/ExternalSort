@@ -5,27 +5,20 @@ import org.apache.commons.lang3.RandomStringUtils;
 import java.io.*;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author korolyov
  *         19.01.17
  */
-public class TestUtils {
-
-    static void inmemorySort(String inputFilename, String outputFilename) throws IOException {
-        inmemorySort(inputFilename, outputFilename, Comparator.naturalOrder());
-    }
-    static void inmemorySort(String inputFilename, String outputFilename, Comparator<String> comparator) throws IOException {
-        try (BufferedReader in = new BufferedReader(new FileReader(inputFilename));
-             PrintWriter out = new PrintWriter(outputFilename)) {
-            in.lines().sorted(comparator).forEach(out::println);
-        }
-    }
+class TestUtils {
 
     static void createFile(String filename, int totalLines, int stringLengthMin, int stringLengthMax) throws FileNotFoundException {
         PrintWriter out = new PrintWriter(filename);
@@ -35,19 +28,15 @@ public class TestUtils {
         out.close();
     }
 
-    static void assertEqualsFiles(String actualFile, String expectedFile) throws IOException {
-        try (BufferedReader actualIn = new BufferedReader(new FileReader(actualFile));
-             BufferedReader expectedIn = new BufferedReader(new FileReader(expectedFile))) {
-            assertEqualsStreams(actualIn.lines(), expectedIn.lines());
+    static void assertFileSorted(String filename, Comparator<String> comparator) {
+        try (BufferedReader in = new BufferedReader(new FileReader(filename))) {
+            in.lines().reduce((s, s2) -> {
+                assertTrue(comparator.compare(s, s2) <= 0);
+                return s2;
+            }).isPresent();
+        } catch (IOException e) {
+            fail(e.getMessage());
         }
-    }
-
-    private static void assertEqualsStreams(Stream<?> stream1, Stream<?> stream2) {
-        Iterator<?> iter1 = stream1.iterator(), iter2 = stream2.iterator();
-        while (iter1.hasNext() && iter2.hasNext()) {
-            assertEquals(iter1.next(), iter2.next());
-        }
-        assertTrue(!iter1.hasNext() && !iter2.hasNext());
     }
 
 }

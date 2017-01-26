@@ -14,9 +14,9 @@ import java.util.concurrent.TimeUnit;
 
 @BenchmarkMode({Mode.AverageTime})
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
-@Warmup(iterations = 10)
-@Measurement(iterations = 10)
-@Fork(2)
+@Warmup(iterations = 1)
+@Measurement(iterations = 5)
+@Fork(1)
 @State(Scope.Benchmark)
 public class Benchmarker {
     private static final String INPUT_FILENAME = "input.txt";
@@ -24,23 +24,36 @@ public class Benchmarker {
 
     @Setup
     public void createInputFile() throws FileNotFoundException {
-        TestUtils.createFile(INPUT_FILENAME, 2_000_000, 128, 129);
+        TestUtils.createFile(INPUT_FILENAME, 1_000_000, 1024, 2048);
     }
 
     @TearDown
     public void cleanUp() {
-        new File(INPUT_FILENAME).delete();
         new File(OUTPUT_FILENAME).delete();
     }
 
     @Benchmark
-    public void externalSort() throws IOException {
+    public void externalSortTwoMaxOpenFiles() throws IOException {
+        ExternalFileSorter.changeMaxOpenFiles(2);
         ExternalFileSorter.sort(INPUT_FILENAME, OUTPUT_FILENAME);
     }
 
     @Benchmark
-    public void inmemorySort() throws IOException {
-        TestUtils.inmemorySort(INPUT_FILENAME, OUTPUT_FILENAME);
+    public void externalSortThreeMaxOpenFiles() throws IOException {
+        ExternalFileSorter.changeMaxOpenFiles(3);
+        ExternalFileSorter.sort(INPUT_FILENAME, OUTPUT_FILENAME);
+    }
+
+    @Benchmark
+    public void externalSortTenMaxOpenFiles() throws IOException {
+        ExternalFileSorter.changeMaxOpenFiles(10);
+        ExternalFileSorter.sort(INPUT_FILENAME, OUTPUT_FILENAME);
+    }
+
+    @Benchmark
+    public void externalSortInfMaxOpenFiles() throws IOException {
+        ExternalFileSorter.changeMaxOpenFiles(1024);
+        ExternalFileSorter.sort(INPUT_FILENAME, OUTPUT_FILENAME);
     }
 
 }

@@ -13,11 +13,13 @@ import java.io.IOException;
 class CachedFileReader implements Closeable {
     private BufferedReader bufferedReader;
     private String cache;
+    private File file;
     private boolean empty;
 
     public CachedFileReader(File file) throws IOException {
         bufferedReader = new BufferedReader(new FileReader(file));
         this.empty = false;
+        this.file = file;
         performPop();
     }
 
@@ -39,6 +41,7 @@ class CachedFileReader implements Closeable {
     @Override
     public void close() throws IOException {
         bufferedReader.close();
+        file.delete();
     }
 
     public String peek() {

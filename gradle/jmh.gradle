@@ -11,39 +11,6 @@ dependencies {
     jmhCompile 'org.openjdk.jmh:jmh-generator-annprocess:1.14.1'
 }
 
-task ('jmhHelp', description:'Print help for the jmh task') << {
-    println ""
-    println "Usage of jmh tasks:"
-    println ""
-
-    println "Only execute specific benchmark(s):"
-    println "\t./gradlew jmh -Pinclude=\".*MyBenchmark.*\""
-
-    println ""
-    println "Specify extra profilers:"
-    println "\t./gradlew jmh -Pprofilers=\"gc,stack\""
-
-    println ""
-    println "Prominent profilers:"
-    println "\tcomp - JitCompilations, tune your iterations"
-    println "\tstack - which methods used most time"
-    println "\tgc - print garbage collection stats"
-    println "\ths_thr - thread usage"
-
-    println ""
-    println "Change report format from JSON to one of [CSV, JSON, NONE, SCSV, TEXT]:"
-    println "\t./gradlew jmh -Pformat=csv"
-
-    println ""
-    println "Specify JVM arguments:"
-    println "\t./gradlew jmh -PjvmArgs=\"-Dtest.cluster=local\""
-
-    println ""
-    println "Resources:"
-    println "\thttp://tutorials.jenkov.com/java-performance/jmh.html (Introduction)"
-    println "\thttp://hg.openjdk.java.net/code-tools/jmh/file/tip/jmh-samples/src/main/java/org/openjdk/jmh/samples/ (Samples)"
-}
-
 task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
     classpath = sourceSets.jmh.runtimeClasspath
     main = 'org.openjdk.jmh.Main'
@@ -68,8 +35,8 @@ task jmh(type: JavaExec, description: 'Executing JMH benchmarks') {
             args '-prof', it
         }
     }
-    args '-jvmArgsPrepend', '-Xmx3072m'
-    args '-jvmArgsPrepend', '-Xms3072m'
+    args '-jvmArgsPrepend', '-Xmx256m'
+    args '-jvmArgsPrepend', '-Xms256m'
     if(jvmArgs) {
         for(jvmArg in jvmArgs.split(' ')) {
             args '-jvmArgsPrepend', jvmArg
